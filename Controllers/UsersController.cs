@@ -45,6 +45,16 @@ namespace Bluebeam.Controllers
         }
 
         [HttpGet]
+        [Route("potentialFriends")]
+        public List<UserResponse> PotentialFriends(int userId,int targetLevel)
+        {
+            var query = from u in UserRepo.Instance.GetUserPotentialFriends(userId, targetLevel)
+                        select new UserResponse(UserRepo.Instance.FindById(u));
+
+            return query.ToList();
+        }
+
+        [HttpGet]
         [Route("users")]
         public List<UserResponse> Get()
         {
