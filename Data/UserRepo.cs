@@ -42,7 +42,38 @@ namespace Bluebeam.Data
 
         public IEnumerable<User> GetAll()
         {
-            return this.users.Values.ToList();
+            return this.users.Values.ToList(); 
+        }
+
+        public IEnumerable<User> GetUserFriends(int userId)
+        {
+            User user = FindById(userId);
+
+            return user.Friends.Values;
+        }
+
+        public void AddFriend(int userId, int friendId)
+        {
+            if (!users.ContainsKey(userId) || !users.ContainsKey(friendId))
+                throw new KeyNotFoundException();
+
+            if (!users[userId].Friends.ContainsKey(friendId) && userId != friendId)
+            {
+                users[userId].Friends.Add(friendId, FindById(friendId));
+                users[friendId].Friends.Add(userId, FindById(userId));
+            }
+        }
+
+        public void RemoveFriend(int userId, int friendId)
+        {
+            if (!users.ContainsKey(userId) || !users.ContainsKey(friendId))
+                throw new KeyNotFoundException();
+
+            if (!users[userId].Friends.ContainsKey(friendId) && userId != friendId)
+            {
+                users[userId].Friends.Add(friendId, FindById(friendId));
+                users[friendId].Friends.Add(userId, FindById(userId));
+            }
         }
     }
 }

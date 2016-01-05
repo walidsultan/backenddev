@@ -20,6 +20,23 @@ namespace Bluebeam.Controllers
             UserRepo.Instance.AddUser(request.ToUser(UniqueId.Next()));
         }
 
+        [HttpPost]
+        [Route("addFriend")]
+        public void AddFriend(AddFriendRequest request)
+        {
+            UserRepo.Instance.AddFriend(request.UserId,request.FriendId);
+        }
+
+        [HttpGet]
+        [Route("getFriends/{userId}")]
+        public List<UserResponse> GetFriends(int userId)
+        {
+            var query = from u in UserRepo.Instance.GetUserFriends(userId)
+                        select new UserResponse(u);
+
+            return query.ToList();
+        }
+
         [HttpGet]
         [Route("users")]
         public List<UserResponse> Get()
