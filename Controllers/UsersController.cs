@@ -22,9 +22,16 @@ namespace Bluebeam.Controllers
 
         [HttpPost]
         [Route("addFriend")]
-        public void AddFriend(AddFriendRequest request)
+        public void AddFriend(FriendRequest request)
         {
-            UserRepo.Instance.AddFriend(request.UserId,request.FriendId);
+            UserRepo.Instance.AddFriend(request.UserId, request.FriendId);
+        }
+
+        [HttpPost]
+        [Route("removeFriend")]
+        public void RemoveFriend(FriendRequest request)
+        {
+            UserRepo.Instance.RemoveFriend(request.UserId, request.FriendId);
         }
 
         [HttpGet]

@@ -69,11 +69,10 @@ namespace Bluebeam.Data
             if (!users.ContainsKey(userId) || !users.ContainsKey(friendId))
                 throw new KeyNotFoundException();
 
-            if (!users[userId].Friends.ContainsKey(friendId) && userId != friendId)
-            {
-                users[userId].Friends.Add(friendId, FindById(friendId));
-                users[friendId].Friends.Add(userId, FindById(userId));
-            }
+         
+                users[userId].Friends.Remove(friendId);
+                users[friendId].Friends.Remove(userId); 
+         
         }
     }
 }
