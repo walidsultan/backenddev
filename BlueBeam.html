@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE>
+
+<html lang="en">
+
+<head>
+<style>
+label{
+	min-width: 100px;
+    float: left;
+}
+
+  #divUsers table tr:first-of-type td {
+     font-weight:bold;
+     color: #333;
+    }
+
+    #divUsers table,#divUsers table th,#divUsers table td {
+		border: 1px solid #333;
+		border-collapse: collapse;
+	}
+	#btnInit,#btnClear{
+		float:right;
+	}
+</style>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+    <title>Bluebeam Client</title>
+	
+	<script src="http://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
+	
+<script type="text/javascript" >
+$(document).ready(function(){
+	displayAllUsers();
+	$('#btnAddUser').click(function(){
+			addUser($('#txtUsername').val(),$('#txtPassword').val());	
+	});
+	$('#btnAddFriend').click(function(){
+			addFriend($('#addFriend #txtUserId').val(),$('#addFriend #txtFriendId').val());	
+	});
+	$('#btnRemoveFriend').click(function(){
+			removeFriend($('#addFriend #txtUserId').val(),$('#addFriend #txtFriendId').val());	
+	});
+	
+	
+});
+function addUser(username, password){
+	 var userData = JSON.stringify({UserName:username,Password:password});
+	$.ajax({
+			url: "http://localhost:8080/Bluebeam/Users",
+			data: userData,
+			type: 'POST',
+			contentType: "application/json",
+			dataType: "json",
+			success: function (data) {
+				displayAllUsers();
+				$('#txtUsername').val('');
+				$('#txtPassword').val('');	
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+
+				$('#errorResult').html(xhr.responseText);
+
+			}
+		});
+}
+
+function addFriend(userId, friendId){
+	 var userData = JSON.stringify({UserId:userId,FriendId:friendId});
+	$.ajax({
+			url: "http://localhost:8080/Bluebeam/AddFriend",
+			data: userData,
+			type: 'POST',
+			contentType: "application/json",
+			dataType: "json",
+			success: function (data) {
+				$('#addFriend #txtUserId').val('');
+				$('#addFriend #txtFriendId').val('');
+
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+
+				$('#errorResult').html(xhr.responseText);
+
+			}
+		});
+}
+function removeFriend(userId, friendId){
+	 var userData = JSON.stringify({UserId:userId,FriendId:friendId});
+	$.ajax({
+			url: "http://localhost:8080/Bluebeam/removeFriend",
+			data: userData,
+			type: 'POST',
+			contentType: "application/json",
+			dataType: "json",
+			success: function (data) {
+				$('#addFriend #txtUserId').val('');
+				$('#addFriend #txtFriendId').val('');
+
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+
+				$('#errorResult').html(xhr.responseText);
+
+			}
+		});
+}
+
+function displayAllUsers(){
+	$.ajax({
+			url: "http://localhost:8080/Bluebeam/Users",
+			type: 'GET',
+			contentType: "application/json",
+			dataType: "json",
+			success: function (data) {
+				$('#divUsers').html('');
+				if(data.length>0){
+					var table="<table><tr><td>Id<td>Username</td><td>Friends</td><td>Potential Friends</td></tr>";	
+					for(i in data){
+						table+='<tr><td>'+data[i].UserId+'</td><td>'+data[i].UserName+
+								'</td><td><a class="lnkShowFriends" onclick="showFriends('+data[i].UserId+')" href="#"  userid='+data[i].UserId+'>Show Friends</a></td><td><a class="lnkPotentialFriends" onclick="potentialFriends('+data[i].UserId+',1)" href="#"  userid='+data[i].UserId+'>Potential Friends</a></td></tr>';
+					}
+					table+='</table>';
+					
+					$('#divUsers').html(table);
+				}
+
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+
+				$('#errorResult').html(xhr.responseText);
+
+			}
+		});
+}
+
+function showFriends(userId)
+{
+	$.ajax({
+			url: "http://localhost:8080/Bluebeam/getFriends/"+userId,
+			type: 'GET',
+			contentType: "application/json",
+			dataType: "json",
+			success: function (data) {
+				var friends='';
+				for(i in data){
+					friends+= friends==''? data[i].UserName : ', '+data[i].UserName ;
+				}
+				$('.lnkShowFriends[userid='+userId+']').parent('td').html(friends);
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+
+				$('#errorResult').html(xhr.responseText);
+
+			}
+		});
+}
+
+function potentialFriends(userId,targetLevel)
+{
+	 var requestData = {UserId:userId,TargetLevel:targetLevel};
+	$.ajax({
+			url: "http://localhost:8080/Bluebeam/potentialFriends",
+			type: 'GET',
+			data: requestData,
+			contentType: "application/json",
+			dataType: "json",
+			success: function (data) {
+				var friends='';
+				for(i in data){
+					friends+= friends==''? data[i].UserName : ', '+data[i].UserName ;
+				}
+				$('.lnkPotentialFriends[userid='+userId+']').parent('td').html(friends);
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+
+				$('#errorResult').html(xhr.responseText);
+
+			}
+		});
+}
+
+
+
+function init(){
+	
+	for(i=0;i<100;i++){
+		addUser('Walid','');
+		addUser('Tarek','');
+		addUser('Shady','');
+		addUser('John','');
+		addUser('greg','');
+		addUser('Mark','');
+	}
+}
+
+function clearUsers(){
+	$.ajax({
+			url: "http://localhost:8080/Bluebeam/clearAllUsers",
+			type: 'POST',
+			contentType: "application/json",
+			dataType: "json",
+			success: function (data) {
+				displayAllUsers();
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+
+				$('#errorResult').html(xhr.responseText);
+
+			}
+		});
+}
+
+</script>
+
+</head>
+
+<body>
+<div id="divUsers"></div>
+<fieldset>
+	<legend>Add new user:</legend>
+	<label>Username: </label> <input type="text" id="txtUsername"/><br/>
+	<label>Password: </label> <input type="text" id="txtPassword"/><br/>
+	<input id="btnAddUser" type ="button" value="Add User"/>
+</fieldset>
+<fieldset id="addFriend">
+	<legend>Add new friend:</legend>
+	<label>UserId: </label> <input type="text" id="txtUserId"/><br/>
+	<label>FriendId: </label> <input type="text" id="txtFriendId"/><br/>
+	<input id="btnAddFriend" type ="button" value="Add Friend"/>
+	<input id="btnRemoveFriend" type ="button" value="Remove Friend"/>
+</fieldset>
+
+<div id="errorResult"></div>
+</body>
+	<input id="btnInit" type ="button" value="init" onclick="init()"/>
+	<input id="btnClear" type ="button" value="clear" onclick="clearUsers()"/>
+</html>
+
+
