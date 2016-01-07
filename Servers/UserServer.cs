@@ -21,15 +21,21 @@ namespace Bluebeam.Servers
         public Dictionary<int, UserRepo> userRepos = new Dictionary<int, UserRepo>();
         public Dictionary<int, int> userIdToRepoMap = new Dictionary<int, int>();
 
+        private readonly object addUserLock = new object();
+
         public void AddUser(User user) {
-            int userRepoId = user.Id / UserRepo.MaxCapacity;
-            if (userRepos.Count < userRepoId + 1) {
-                userRepos.Add(userRepoId, new UserRepo());
+            lock (addUserLock)
+            {
+                int userRepoId = user.Id / UserRepo.MaxCapacity;
+                if (userRepos.Count < userRepoId + 1)
+                {
+                    userRepos.Add(userRepoId, new UserRepo());
+                }
+
+                userIdToRepoMap.Add(user.Id, userRepoId);
+
+                userRepos.Last().Value.AddUser(user);
             }
-
-            userIdToRepoMap.Add(user.Id, userRepoId);
-
-            userRepos.Last().Value.AddUser(user);
         }
 
         public List<User> GetAll()
