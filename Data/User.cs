@@ -32,7 +32,5 @@ namespace Bluebeam.Data
 
         public List<int> FavoriteShowIds { get; private set; }
         public IDictionary<int, User> Friends { get; private set; }
-
-        public Guid VisitedId { get; set; }
     }
 }

@@ -51,11 +51,23 @@ namespace Bluebeam.Data
 
             return user.Friends.Values;
         }
-        public List<int> GetUserFriendsIds(int userId,Guid visitedId)
+        public List<int> GetUserFriendsIds(int userId,Dictionary<int, int> visitedMap)
         {
             User user = FindById(userId);
 
-            return user.Friends.Where(f => !f.Value.VisitedId.Equals(visitedId)).Select(f=>f.Key).ToList();
+            return user.Friends.Where(f =>
+            {
+                if (!visitedMap.ContainsKey(f.Key))
+                {
+                    visitedMap.Add(f.Key, 1);
+                    return true;
+                }
+                else
+                {
+                    visitedMap[f.Key]++;
+                    return false;
+                }
+            }).Select(f => f.Key).ToList();
         }
 
         public void AddFriend(int userId, int friendId)
@@ -82,32 +94,26 @@ namespace Bluebeam.Data
         public IEnumerable<int> GetUserPotentialFriends(int userId, int level)
         {
             if (!users.ContainsKey(userId)) return new List<int>();
-            
-            Guid visitedId = Guid.NewGuid();
-            users[userId].VisitedId = visitedId;
 
-            List<int> currentFriends = GetUserFriendsIds(userId, visitedId);
-            SetUsersVisitedId(currentFriends, visitedId);
-            return GetUserPotentialFriends(currentFriends, level, 0, visitedId);
+            Dictionary<int, int> visitedMap = new Dictionary<int, int>();
+            visitedMap.Add(userId, 1);
+
+            IEnumerable<int> currentFriends = GetUserFriendsIds(userId, visitedMap);
+            return GetUserPotentialFriends(currentFriends, level, 0, visitedMap);
         }
 
-        private IEnumerable<int> GetUserPotentialFriends(IEnumerable<int> users, int targetLevel, int currentLevel, Guid visitedId)
+        private IEnumerable<int> GetUserPotentialFriends(IEnumerable<int> users, int targetLevel, int currentLevel, Dictionary<int, int> visitedMap)
         {
             if(currentLevel==targetLevel) return users;
 
             List<int> potentialFriends = new List<int>();
             foreach (int userId in users) {
-                List<int> friends = GetUserFriendsIds(userId, visitedId);
-                SetUsersVisitedId(friends, visitedId);
+                List<int> friends = GetUserFriendsIds(userId, visitedMap);
                 potentialFriends.AddRange(friends);
             }
 
-
-            return GetUserPotentialFriends(potentialFriends, targetLevel, ++currentLevel, visitedId);
+            return GetUserPotentialFriends(potentialFriends, targetLevel, ++currentLevel, visitedMap);
         }
 
-        private void SetUsersVisitedId( List<int> usersIds, Guid visitedId){
-            usersIds.ForEach(u=>users[u].VisitedId=visitedId);
-        }
     }
 }
