@@ -1,4 +1,5 @@
 ﻿using Bluebeam.Data;
+using Bluebeam.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,9 @@ namespace Bluebeam.Servers
             {
                 return LazyInstance.Value;
             }
-        } 
+        }
 
-        public Dictionary<int, UserRepo> userRepos = new Dictionary<int, UserRepo>();
+        public Dictionary<int, IUserRepo> userRepos = new Dictionary<int, IUserRepo>();
         public Dictionary<int, int> userIdToRepoMap = new Dictionary<int, int>();
 
         private readonly object addUserLock = new object();

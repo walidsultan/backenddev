@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Data.Linq;
 using System.Linq;
 using System.Web;
+using Bluebeam.Interfaces;
 
 namespace Bluebeam.Data
 {
-    public class UserRepo
+    public class UserRepo : IUserRepo
     {
 
         public const int MaxCapacity=5;
@@ -85,8 +86,5 @@ namespace Bluebeam.Data
         {
                 users[userId].Friends.Remove(friendId);
         }
-
-        
-
     }
 }
