@@ -39,7 +39,7 @@ namespace Bluebeam.Controllers
         public List<UserResponse> GetFriends(int userId)
         {
             var query = from u in UserRepo.Instance.GetUserFriends(userId)
-                        select new UserResponse(u);
+                        select new UserResponse(UserRepo.Instance.FindById(u));
 
             return query.ToList();
         }

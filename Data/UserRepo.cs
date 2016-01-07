@@ -45,29 +45,29 @@ namespace Bluebeam.Data
             return this.users.Values.ToList(); 
         }
         
-        public IEnumerable<User> GetUserFriends(int userId)
+        public IEnumerable<int> GetUserFriends(int userId)
         {
             User user = FindById(userId);
 
-            return user.Friends.Values;
+            return  user.Friends ;
         }
-        public List<int> GetUserFriendsIds(int userId,Dictionary<int, int> visitedMap)
+        public IEnumerable<int> GetUserFriendsIds(int userId,Dictionary<int, int> visitedMap)
         {
             User user = FindById(userId);
 
             return user.Friends.Where(f =>
             {
-                if (!visitedMap.ContainsKey(f.Key))
+                if (!visitedMap.ContainsKey(f))
                 {
-                    visitedMap.Add(f.Key, 1);
+                    visitedMap.Add(f, 1);
                     return true;
                 }
                 else
                 {
-                    visitedMap[f.Key]++;
+                    visitedMap[f]++;
                     return false;
                 }
-            }).Select(f => f.Key).ToList();
+            });
         }
 
         public void AddFriend(int userId, int friendId)
@@ -75,10 +75,10 @@ namespace Bluebeam.Data
             if (!users.ContainsKey(userId) || !users.ContainsKey(friendId))
                 throw new KeyNotFoundException();
 
-            if (!users[userId].Friends.ContainsKey(friendId) && userId != friendId)
+            if (!users[userId].Friends.Contains(friendId) && userId != friendId)
             {
-                users[userId].Friends.Add(friendId, FindById(friendId));
-                users[friendId].Friends.Add(userId, FindById(userId));
+                users[userId].Friends.Add(friendId);
+                users[friendId].Friends.Add(userId);
             }
         }
 
@@ -108,7 +108,7 @@ namespace Bluebeam.Data
 
             List<int> potentialFriends = new List<int>();
             foreach (int userId in users) {
-                List<int> friends = GetUserFriendsIds(userId, visitedMap);
+                IEnumerable<int> friends = GetUserFriendsIds(userId, visitedMap);
                 potentialFriends.AddRange(friends);
             }
 

@@ -19,7 +19,7 @@ namespace Bluebeam.Data
             this.name = name;
             this.password = password;
             this.FavoriteShowIds = new List<int>();
-            this.Friends = new Dictionary<int, User>();
+            this.Friends = new List<int>();
         }
 
         private readonly int id;
@@ -31,6 +31,6 @@ namespace Bluebeam.Data
         internal SecureString Password { get { return this.password; } }
 
         public List<int> FavoriteShowIds { get; private set; }
-        public IDictionary<int, User> Friends { get; private set; }
+        public List<int> Friends { get; private set; }
     }
 }
