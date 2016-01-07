@@ -8,6 +8,9 @@ namespace Bluebeam.Data
 {
     public class UserRepo
     {
+
+        public const int MaxCapacity=5;
+
         private static readonly Lazy<UserRepo> LazyInstance = new Lazy<UserRepo>(() => new UserRepo());
         public static UserRepo Instance
         {
@@ -72,48 +75,18 @@ namespace Bluebeam.Data
 
         public void AddFriend(int userId, int friendId)
         {
-            if (!users.ContainsKey(userId) || !users.ContainsKey(friendId))
-                throw new KeyNotFoundException();
-
             if (!users[userId].Friends.Contains(friendId) && userId != friendId)
             {
                 users[userId].Friends.Add(friendId);
-                users[friendId].Friends.Add(userId);
             }
         }
 
         public void RemoveFriend(int userId, int friendId)
         {
-            if (!users.ContainsKey(userId) || !users.ContainsKey(friendId))
-                throw new KeyNotFoundException();
-
                 users[userId].Friends.Remove(friendId);
-                users[friendId].Friends.Remove(userId); 
         }
 
-        public IEnumerable<int> GetUserPotentialFriends(int userId, int level)
-        {
-            if (!users.ContainsKey(userId)) return new List<int>();
-
-            Dictionary<int, int> visitedMap = new Dictionary<int, int>();
-            visitedMap.Add(userId, 1);
-
-            IEnumerable<int> currentFriends = GetUserFriendsIds(userId, visitedMap);
-            return GetUserPotentialFriends(currentFriends, level, 0, visitedMap);
-        }
-
-        private IEnumerable<int> GetUserPotentialFriends(IEnumerable<int> users, int targetLevel, int currentLevel, Dictionary<int, int> visitedMap)
-        {
-            if(currentLevel==targetLevel) return users;
-
-            List<int> potentialFriends = new List<int>();
-            foreach (int userId in users) {
-                IEnumerable<int> friends = GetUserFriendsIds(userId, visitedMap);
-                potentialFriends.AddRange(friends);
-            }
-
-            return GetUserPotentialFriends(potentialFriends, targetLevel, ++currentLevel, visitedMap);
-        }
+        
 
     }
 }

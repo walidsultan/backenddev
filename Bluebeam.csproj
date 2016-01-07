@@ -120,6 +120,7 @@
   <ItemGroup>
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Data\Server.cs" />
     <Compile Include="Data\UniqueId.cs" />
     <Compile Include="Data\User.cs" />
     <Compile Include="Data\UserRepo.cs" />
