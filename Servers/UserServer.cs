@@ -1,15 +1,16 @@
-﻿using System;
+﻿using Bluebeam.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Bluebeam.Data
+namespace Bluebeam.Servers
 {
-    public class Server
+    public class UserServer
     {
-        private static readonly Lazy<Server> LazyInstance = new Lazy<Server>(() => new Server());
+        private static readonly Lazy<UserServer> LazyInstance = new Lazy<UserServer>(() => new UserServer());
 
-        public static Server Instance
+        public static UserServer Instance
         {
             get
             {

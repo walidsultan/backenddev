@@ -1,6 +1,7 @@
 ﻿using Bluebeam.Data;
 using Bluebeam.Requests;
 using Bluebeam.Responses;
+using Bluebeam.Servers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,29 +18,29 @@ namespace Bluebeam.Controllers
         [Route("users")]
         public void Post(UserRequest request)
         {
-            Server.Instance.AddUser(request.ToUser(UniqueId.Next()));
+            UserServer.Instance.AddUser(request.ToUser(UniqueId.Next()));
         }
 
         [HttpPost]
         [Route("addFriend")]
         public void AddFriend(FriendRequest request)
         {
-            Server.Instance.AddFriend(request.UserId, request.FriendId);
+            UserServer.Instance.AddFriend(request.UserId, request.FriendId);
         }
 
         [HttpPost]
         [Route("removeFriend")]
         public void RemoveFriend(FriendRequest request)
         {
-            Server.Instance.RemoveFriend(request.UserId, request.FriendId);
+            UserServer.Instance.RemoveFriend(request.UserId, request.FriendId);
         }
 
         [HttpGet]
         [Route("getFriends/{userId}")]
         public List<UserResponse> GetFriends(int userId)
         {
-            var query = from u in Server.Instance.GetUserFriends(userId)
-                        select new UserResponse(Server.Instance.FindById(u));
+            var query = from u in UserServer.Instance.GetUserFriends(userId)
+                        select new UserResponse(UserServer.Instance.FindById(u));
 
             return query.ToList();
         }
@@ -48,8 +49,8 @@ namespace Bluebeam.Controllers
         [Route("potentialFriends")]
         public List<UserResponse> PotentialFriends(int userId,int targetLevel)
         {
-            var query = from u in Server.Instance.GetUserPotentialFriends(userId, targetLevel)
-                        select new UserResponse(Server.Instance.FindById(u));
+            var query = from u in UserServer.Instance.GetUserPotentialFriends(userId, targetLevel)
+                        select new UserResponse(UserServer.Instance.FindById(u));
 
             return query.ToList();
         }
@@ -58,7 +59,7 @@ namespace Bluebeam.Controllers
         [Route("users")]
         public List<UserResponse> Get()
         {
-            var query = from u in Server.Instance.GetAll()
+            var query = from u in UserServer.Instance.GetAll()
                         select new UserResponse(u);
 
             return query.ToList();
@@ -68,7 +69,7 @@ namespace Bluebeam.Controllers
         [Route("users/{userId}")]
         public UserResponse Get(int userId)
         {
-            var user = Server.Instance.FindById(userId);
+            var user = UserServer.Instance.FindById(userId);
             return new UserResponse(user);
         }
     }
